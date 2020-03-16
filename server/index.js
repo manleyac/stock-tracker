@@ -1,5 +1,4 @@
 const express = require("express");
-const {ApolloServer, gql} = require("apollo-server-express");
 const connectDB = require("./config/db.js");
 const app = express();
 
@@ -10,7 +9,8 @@ connectDB();
 
 //routes
 app.get("/", (req, res) => res.send("API Running"));
-
+app.use("/api/users", require("./routes/api/users"));
+app.use("/api/auth", require("./routes/api/auth"));
 
 //start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
