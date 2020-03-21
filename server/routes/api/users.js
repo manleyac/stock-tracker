@@ -1,6 +1,6 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator/check");
-const 
+const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 
@@ -32,8 +32,18 @@ router.post(
       if (user) {
         res.status(400).json({ errors: [{ msg: "User Already Exists" }] });
       }
+      
+      //create new user with instance of User model
       user = new User({ name, email, password });
 
+      //encrypt password
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password,salt);
+
+      //save new user to database
+      await user.save();
+      res.send("User Registered");
     } catch (err) {
       console.error(error);
       res.status(500).send("Server Error");
