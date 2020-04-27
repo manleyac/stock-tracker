@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-const axios = require("axios");
+import { connect } from "react-redux";
+import { setAlert } from "../../actions/alert";
+import {register} from "../../actions/auth";
+import PropTypes from "prop-types";
 
-const Login = () => {
+// const axios = require("axios"); used without redux actions
+
+const Login = ({ setAlert, register }) => {
   const [newUser, setUser] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -17,39 +22,21 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const submitUser = async (e) => {
-    const newUser = {
-      name,
-      email,
-      password,
-    };
-
+  const loginUser = async (e) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      const body = JSON.stringify(newUser);
-      const res = await axios.post("/api/users", body, config);
-      console.log(res.data);
+      console.log("login user");
     } catch (error) {
       console.error(error.response.data);
     }
   };
 
-  const loginUser = async (e) => {
-    console.log("login");
-  };
-
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (newUser) {
       if (password !== password2) {
-        console.log("passwords do not match");
+        setAlert("passwords do not match", "danger");
       } else {
-        submitUser(e);
+        await register({name, email, password});
       }
     } else {
       loginUser(e);
@@ -141,4 +128,9 @@ const Login = () => {
   );
 };
 
-export default Login;
+Login.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+};
+
+export default connect(null, { setAlert,register })(Login);
